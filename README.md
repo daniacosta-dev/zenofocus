@@ -206,8 +206,7 @@ Por favor abre un issue antes de enviar un PR grande. Los bugfixes y traduccione
 
 Si ZenoFocus te ayuda a ser más productivo, considera apoyar su desarrollo:
 
-[![Ko-fi](https://img.shields.io/badge/Ko--fi-Apoyar-ff5e5b?style=flat-square&logo=ko-fi)](https://ko-fi.com/daniacosta)
-[![GitHub Sponsors](https://img.shields.io/badge/GitHub-Sponsor-ea4aaa?style=flat-square&logo=github)](https://github.com/sponsors/daniacosta-dev)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Apoyar-ff5e5b?style=flat-square&logo=ko-fi)](https://Ko-fi.com/daniacostadev)
 
 ---
 
