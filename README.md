@@ -7,15 +7,21 @@
 [![Version](https://img.shields.io/github/v/release/daniacosta-dev/zenofocus?style=flat-square)](https://github.com/daniacosta-dev/zenofocus/releases)
 [![Platform](https://img.shields.io/badge/platform-Linux-orange?style=flat-square)](https://github.com/daniacosta-dev/zenofocus/releases)
 
-![ZenoFocus Screenshot](docs/screenshot.png)
+<div align="center">
+<img src="docs/Zenofocus-main.png" width=49% />
+<img src="docs/Zenofocus-break.png" width=49% />
+<img src="docs/Zenofocus-agenda.png" width=49% />
+<img src="docs/Zenofocus-stats.png" width=49% />
+<img src="docs/Zenofocus-tray.png" width=20% />
+<img src="docs/Zenofocus-widget.png" width=20% />
+</div>
+
 
 [🇬🇧 English](#english) · [🇪🇸 Español](#español)
 
 </div>
 
 ---
-
-## English
 
 ### Table of Contents
 - [Features](#features)
@@ -108,108 +114,4 @@ Please open an issue before submitting a large PR. Bug fixes and translations ar
 
 If ZenoFocus helps you stay productive, consider supporting its development:
 
-[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?style=flat-square&logo=ko-fi)](https://ko-fi.com/daniacosta)
-[![GitHub Sponsors](https://img.shields.io/badge/GitHub-Sponsor-ea4aaa?style=flat-square&logo=github)](https://github.com/sponsors/daniacosta-dev)
-
----
-
-## Español
-
-### Tabla de Contenidos
-- [Características](#características)
-- [Instalación](#instalación)
-- [Uso](#uso)
-- [Stack tecnológico](#stack-tecnológico)
-- [Contribuir](#contribuir)
-- [Donar](#donar)
-- [Licencia](#licencia)
-
-### Características
-
-- **⏱ Timer Pomodoro** — Modos foco, descanso corto y largo con anillo de progreso visual
-- **📋 Gestión de tareas** — Crea, edita, elimina y prioriza tus tareas del día
-- **📅 Agenda** — Timeline visual de 7am a 8pm con tareas programadas y recordatorios automáticos
-- **📊 Stats** — Score del día, historial semanal y tiempo por categoría
-- **🪟 Widget flotante** — Mini timer siempre visible que puedes arrastrar por la pantalla
-- **🔔 Notificaciones del sistema** — Notificaciones nativas de GNOME al terminar cada sesión
-- **🖥 Tray icon** — Acceso rápido desde la bandeja del sistema
-- **⚙️ Configurable** — Duración estándar (25/5/15) o personalizada, autostart, sonido
-- **🌍 Bilingüe** — Soporte completo en español e inglés
-- **💾 Persistente** — Todas las tareas y configuraciones se guardan automáticamente en disco
-
-### Instalación
-
-#### Opción 1 — Paquete .deb (Ubuntu, Debian, Pop!_OS, Mint)
-
-```bash
-wget https://github.com/daniacosta-dev/zenofocus/releases/latest/download/zenofocus_amd64.deb
-sudo dpkg -i zenofocus_amd64.deb
-```
-
-#### Opción 2 — AppImage (cualquier distro)
-
-```bash
-wget https://github.com/daniacosta-dev/zenofocus/releases/latest/download/zenofocus_amd64.AppImage
-chmod +x zenofocus_amd64.AppImage
-./zenofocus_amd64.AppImage
-```
-
-> **Nota para usuarios de GNOME:** Para que aparezca el tray icon, instala la [extensión AppIndicator](https://extensions.gnome.org/extension/615/appindicator-support/).
-
-### Uso
-
-1. **Agrega tareas** a tu sidebar antes de iniciar
-2. **Selecciona una tarea** para establecerla como activa
-3. **Inicia el timer** — 25 minutos de trabajo enfocado
-4. **Toma un descanso** cuando termine la sesión
-5. **Repite el ciclo** — cada 4 pomodoros toma un descanso largo
-6. **Revisa Stats** para ver tu progreso del día
-
-El **widget flotante** se abre desde el menú del tray icon y puedes arrastrarlo a cualquier parte de la pantalla.
-
-### Stack tecnológico
-
-| Capa | Tecnología |
-|---|---|
-| Frontend | React + TypeScript |
-| Desktop | Tauri v2 (Rust) |
-| Estado | Zustand |
-| Persistencia | tauri-plugin-store |
-| Notificaciones | notify-send (vía Rust) |
-| Build | Vite |
-
-### Contribuir
-
-¡Las contribuciones son bienvenidas! Así puedes empezar:
-
-```bash
-# Clona el repositorio
-git clone https://github.com/daniacosta-dev/zenofocus.git
-cd zenofocus
-
-# Instala dependencias
-npm install
-
-# Instala Rust (si es necesario)
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
-# Instala dependencias del sistema (Linux)
-sudo apt install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-
-# Ejecuta en modo desarrollo
-npm run tauri dev
-```
-
-Por favor abre un issue antes de enviar un PR grande. Los bugfixes y traducciones siempre son bienvenidos.
-
-### Donar
-
-Si ZenoFocus te ayuda a ser más productivo, considera apoyar su desarrollo:
-
-[![Ko-fi](https://img.shields.io/badge/Ko--fi-Apoyar-ff5e5b?style=flat-square&logo=ko-fi)](https://Ko-fi.com/daniacostadev)
-
----
-
-## License
-
-MIT © [daniacosta-dev](https://github.com/daniacosta-dev)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?style=flat-square&logo=ko-fi)](https://ko-fi.com/daniacostadev)
