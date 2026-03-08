@@ -14,6 +14,7 @@ import { useWidgetSync } from "./hooks/useWidgetSync"
 import { listen } from "@tauri-apps/api/event"
 import { useTimer } from "./store/useTimer"
 import icon from "./assets/icon.png"
+import { invoke } from "@tauri-apps/api/core"
 
 type View = "timer" | "agenda" | "stats" | "settings"
 
@@ -44,6 +45,10 @@ export default function App() {
     return () => { unlisten.then(f => f()) }
   }, [])
 
+  const toggleWidget = async () => {
+    await invoke("toggle_widget")
+  }
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -71,6 +76,23 @@ export default function App() {
         <div className="date-display">
           {now.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
         </div>
+        <div style={{
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+        <button
+          onClick={toggleWidget}
+          style={{
+            background: "transparent",
+            border: "1px solid #1e1e2e",
+            color: "#52525b",
+            width: 32, height: 32, borderRadius: 6,
+            cursor: "pointer", fontSize: 14,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+          title="Widget"
+        >
+          ⚡
+        </button>
         <button
           onClick={() => setView(view === "settings" ? "timer" : "settings")}
           style={{
@@ -85,6 +107,7 @@ export default function App() {
         >
           ⚙️
         </button>
+        </div>
       </header>
 
       <main className="main-content">

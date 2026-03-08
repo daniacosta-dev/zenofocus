@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { listen } from "@tauri-apps/api/event"
 import { emit } from "@tauri-apps/api/event"
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import { useSettings } from "../../store/useSettings"
 import { useT } from "../../hooks/useTranslation"
+import { invoke } from "@tauri-apps/api/core"
 
 type Mode = "work" | "shortBreak" | "longBreak"
 
@@ -35,6 +36,7 @@ interface TimerState {
 export default function Widget() {
   const loadSettings = useSettings((s) => s.loadSettings)
   const txt = useT()
+  const lastEventRef = useRef<number>(Date.now())
   const [state, setState] = useState<TimerState>({
     mode: "work",
     timeLeft: 25 * 60,
@@ -48,16 +50,42 @@ export default function Widget() {
     longBreak: txt.longBreak,
   }
 
+  const openMainWindow = async () => {
+    await invoke("show_main_window")
+  }
+
   useEffect(() => {
     loadSettings()
   }, [])
 
   useEffect(() => {
     const unlisten = listen<TimerState>("timer-state", (e) => {
+      lastEventRef.current = Date.now()
       setState(e.payload)
     })
     return () => { unlisten.then(f => f()) }
   }, [])
+
+  useEffect(() => {
+    let interval: number | null = null
+
+    if (state.running) {
+      interval = setInterval(() => {
+        // Solo contar si no hay eventos recientes de la ventana principal
+        const timeSinceLastEvent = Date.now() - lastEventRef.current
+        if (timeSinceLastEvent > 2000) {
+          setState(prev => {
+            if (prev.timeLeft <= 0) return prev
+            return { ...prev, timeLeft: prev.timeLeft - 1 }
+          })
+        }
+      }, 1000)
+    }
+
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [state.running])
 
   const { mode, timeLeft, running, activeTask } = state
   const color = MODE_COLOR[mode]
@@ -75,9 +103,9 @@ export default function Widget() {
 
   const hideWidget = async () => {
     console.log("hideWidget llamado")
-  const win = getCurrentWindow()
-  console.log("win:", win)
-  await win.hide()
+    const win = getCurrentWindow()
+    console.log("win:", win)
+    await win.hide()
   }
 
   return (
@@ -97,6 +125,26 @@ export default function Widget() {
         userSelect: "none",
       }}
     >
+      <div>
+      {/* Botón abrir ventana principal */}
+      <button
+  onMouseDown={e => e.stopPropagation()}
+  onClick={openMainWindow}
+  style={{
+    position: "absolute",
+    top: 6, left: 8, zIndex: 10,
+    background: "transparent", border: "none",
+    color: "#3f3f46", cursor: "pointer",
+    fontSize: 12, lineHeight: 1,
+    padding: "2px 6px",
+  }}
+  onMouseEnter={e => (e.currentTarget.style.color = "#f59e0b")}
+  onMouseLeave={e => (e.currentTarget.style.color = "#3f3f46")}
+  title="Abrir ZenoFocus"
+>
+  ⚡
+</button>
+      {/* Botón cerrar widget */}
       <button
         onMouseDown={e => e.stopPropagation()}
         onClick={hideWidget}
@@ -114,6 +162,7 @@ export default function Widget() {
       >
         ×
       </button>
+      </div>
       {/* Progress ring */}
       <div style={{ position: "relative", width: 52, height: 52, flexShrink: 0 }}>
         <svg width="52" height="52" viewBox="0 0 52 52">

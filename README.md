@@ -55,7 +55,7 @@ wget https://github.com/daniacosta-dev/zenofocus/releases/latest/download/zenofo
 chmod +x zenofocus_amd64.AppImage
 ./zenofocus_amd64.AppImage
 ```
-
+> **Note:** The AppImage version requires `xdotool` to be installed for the widget's "open main window" button to work when the app is minimized: `sudo apt install xdotool`. The `.deb` package installs it automatically.
 > **Note for GNOME users:** For the tray icon to appear, install the [AppIndicator extension](https://extensions.gnome.org/extension/615/appindicator-support/).
 
 ### Usage

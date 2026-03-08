@@ -1,7 +1,7 @@
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    AppHandle, Manager,
+    AppHandle, Listener, Manager,
 };
 
 #[tauri::command]
@@ -26,29 +26,84 @@ fn send_notification(title: String, body: String) {
         .ok();
 }
 
+#[tauri::command]
+fn show_main_window(app: AppHandle) {
+    if let Some(win) = app.get_webview_window("main") {
+        let _ = win.unminimize();
+        let _ = win.show();
+        let _ = win.set_focus();
+
+        std::process::Command::new("xdotool")
+            .args(["search", "--name", "ZenoFocus", "windowactivate", "--sync"])
+            .spawn()
+            .ok();
+    } else {
+        let _ = tauri::WebviewWindowBuilder::new(
+            &app,
+            "main",
+            tauri::WebviewUrl::App("index.html".into()),
+        )
+        .title("ZenoFocus")
+        .inner_size(800.0, 600.0)
+        .build();
+    }
+}
+
+#[tauri::command]
+fn toggle_widget(app: AppHandle) {
+    if let Some(win) = app.get_webview_window("widget") {
+        match win.is_visible() {
+            Ok(true) => { let _ = win.hide(); }
+            _ => {
+                let _ = win.show();
+                let _ = win.set_focus();
+            }
+        }
+    }
+}
+
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_notification::init())
         .setup(|app| {
-            let show = MenuItem::with_id(app, "show", "Mostrar", true, None::<&str>)?;
-            let widget = MenuItem::with_id(app, "widget", "Widget", true, None::<&str>)?;
-            let quit = MenuItem::with_id(app, "quit", "Salir", true, None::<&str>)?;
+            let show = MenuItem::with_id(app, "show", "Abrir ZenoFocus", true, None::<&str>)?;
+            let widget = MenuItem::with_id(app, "widget", "Widget flotante", true, None::<&str>)?;
+            let quit = MenuItem::with_id(app, "quit", "Cerrar ZenoFocus", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&show, &widget, &quit])?;
 
-            // Cerrar widget cuando se cierra la ventana principal
+            // Prevenir cierre real — solo ocultar
             let app_handle = app.handle().clone();
             if let Some(main_win) = app.get_webview_window("main") {
                 main_win.on_window_event(move |event| {
                     if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                        api.prevent_close(); // ← evita que se cierre
+                        api.prevent_close();
                         if let Some(win) = app_handle.get_webview_window("main") {
                             let _ = win.hide();
                         }
                     }
                 });
             }
+
+            // Listener para reabrir ventana principal desde el widget
+            let app_handle2 = app.handle().clone();
+            app.listen("reopen-main", move |_| {
+                if let Some(win) = app_handle2.get_webview_window("main") {
+                    let _ = win.unminimize();
+                    let _ = win.show();
+                    let _ = win.set_focus();
+                } else {
+                    let _ = tauri::WebviewWindowBuilder::new(
+                        &app_handle2,
+                        "main",
+                        tauri::WebviewUrl::App("index.html".into()),
+                    )
+                    .title("ZenoFocus")
+                    .inner_size(800.0, 600.0)
+                    .build();
+                }
+            });
 
             TrayIconBuilder::with_id("tray")
                 .icon(app.default_window_icon().unwrap().clone())
@@ -57,12 +112,10 @@ pub fn run() {
                 .on_menu_event(|app: &AppHandle, event| match event.id.as_ref() {
                     "show" => {
                         if let Some(win) = app.get_webview_window("main") {
-                            // Ventana existe, solo mostrarla
                             let _ = win.unminimize();
                             let _ = win.show();
                             let _ = win.set_focus();
                         } else {
-                            // Ventana fue cerrada, recrearla
                             let _ = tauri::WebviewWindowBuilder::new(
                                 app,
                                 "main",
@@ -76,9 +129,7 @@ pub fn run() {
                     "widget" => {
                         if let Some(win) = app.get_webview_window("widget") {
                             match win.is_visible() {
-                                Ok(true) => {
-                                    let _ = win.hide();
-                                }
+                                Ok(true) => { let _ = win.hide(); }
                                 _ => {
                                     let _ = win.show();
                                     let _ = win.set_focus();
@@ -99,13 +150,7 @@ pub fn run() {
                         let app = tray.app_handle();
                         if let Some(win) = app.get_webview_window("main") {
                             match win.is_visible() {
-                                Ok(true) => {
-                                    let _ = win.hide();
-                                    // Ocultar widget también
-                                    if let Some(widget) = app.get_webview_window("widget") {
-                                        let _ = widget.hide();
-                                    }
-                                }
+                                Ok(true) => { let _ = win.hide(); }
                                 _ => {
                                     let _ = win.show();
                                     let _ = win.set_focus();
@@ -118,7 +163,7 @@ pub fn run() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet, send_notification])
+        .invoke_handler(tauri::generate_handler![greet, send_notification, show_main_window, toggle_widget])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
